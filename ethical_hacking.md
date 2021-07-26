@@ -42,7 +42,7 @@ hide
 
 
 
-## 01 : Reconnaissance.
+## 01 : Reconnaissance / énumération.
 
 * `nmap -sV -a -p- [ip]` : lister les ports, numéro de version, OS
 -sV : versions logicielles ;
@@ -93,6 +93,7 @@ Samba est l'implémentation Unix du protocole SMB. <br>
 ### Service ouvert : FTP - 21
 
 https://book.hacktricks.xyz/pentesting/pentesting-ftp
+
 
 
 ## 02 : Exploitation
