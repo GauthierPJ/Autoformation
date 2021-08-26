@@ -116,3 +116,14 @@ Il existe 3 flux en bash : STDIN (0), STDOUT(1), STDERR(2)
 Exemple : `cat < toto.txt` est équivalent à `cat toto.txt` 
 * `[cmd] << EOF`: permet d'envoyer du contenu à la commande [cmd] jusqu'à ce qu'on tape EOF.
 Exemple : `wc -m << EOF` puis `abcdef` puis `EOF` renvoie le nombre de caractère de abcdef.
+
+# Droits
+
+* Syntaxe de `kalimero ALL=(ALL:ALL) ALL tq A B(C:D) E` : 
+    ```
+    A : utilisateur. Préfixé par % (%A) : groupe A.
+    B : Nom de la machine 
+    C : Sous quelle identité ? ALL comprend root.
+    D : Sous quel groupe ? 
+    E : Commande à exécuter.
+    ```

