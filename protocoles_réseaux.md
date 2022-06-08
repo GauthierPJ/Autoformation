@@ -158,7 +158,8 @@ Plusieurs requêtes à différents serveurs seront envoyées :
 
 * Avantages du DNS : 
     1. Ne pas à avoir à retenir une adresse IP (confort).
-    2. Si le serveur hébergeant notre site web n'est plus accessible, il suffit que notre hébergeur fasse pointer notre DN vers le serveur de sauvegarde. Notre DN ne pointe alors pas un serveur mais un site web (résilience). 
+    2. L'adresse IP d'un serveur n'est pas forcément tout le temps la même : si le serveur hébergeant notre site web n'est plus accessible, il suffit que notre hébergeur fasse pointer notre DN vers le serveur de sauvegarde. Notre DN ne pointe alors pas un serveur mais un site web (résilience). 
+    3. Un serveur peut héberger plusieurs sites (flexibilité)
 
 * Lexique serveur DNS : <br>
 Un serveur DNS est en réalité seulement un ensemble de clé/valeur. Voici différent type d'enregistrement.
@@ -182,9 +183,7 @@ Un serveur DNS est en réalité seulement un ensemble de clé/valeur. Voici diff
 * Attaques basées sur DNS : 
     1. Transfert de zone : procédure qui permet à deux serveurs DNS d'échanger leurs zones. Nécessaire pour la redondance. La méthode la plus connue utilise le protocole AXFR (client-serveur sur TCP). L'utilisation de cette procédure peut être détournée car elle ne requiert pas d'authentification. N'importe qui peut se procurer les informations d'une zone entière en utilisant AXFR. Ainsi, des attaquants peuvent utiliser ces informations pour conduire leurs attaques. Pour s'y protéger, il faut restreindre l'AXFR qu'à des IP de confiance.
 
-
 * Sources : https://www.acunetix.com/blog/articles/dns-zone-transfers-axfr/
-
 
 # Attaques réseaux
 
@@ -204,8 +203,6 @@ Efficace si H répond avant B
 1. A : Broadcast : who has 192.168.1.254 ? 
 2. H : C'est moi, voici ma MAC.
 3. A : Met à jour son arp cache. H est désormais espion.
-
-## 
 
 
 

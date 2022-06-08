@@ -17,7 +17,7 @@ permet de chercher si "FLAG {" est contenu dans un fichier
 * Valeur d'une variable : `$x`
 * Affectation : `x=a` (`x= a` ne fonctionne pas)
 * Affectation par lecture : `read x`
-Affichage d'une chaîne avant : `read -p "Entrez x : " x`
+Affichage d'une chaîne avant : `read -p "Entrez x : " x` f 
 * Constante : `declare -r x=a`
 * Suppression d'une variable : `unset x`
 

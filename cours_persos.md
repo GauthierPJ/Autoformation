@@ -1,68 +1,44 @@
-___
 # Différence XSS ET CSRF
 
-## Attaque XSS
+## 1. Attaque XSS
 
 Attaque utilisant une faille du site web, qui permet d'injecter du contenu dans une page (attaque front-end). 
 En fait, lorsque le site a une faille xss, il suffit d'injecter du code dans la faille (champ, valeurs basées sur les headers...) qui pointe vers l'adresse IP souhaitée (notre machine pour un vol de cookie, une page frauduleuse pour du phishing). 
 La redirection peut se faire avec une iframe, une image, un code javascript.
 On envoie la requête malveillante à la victime dont le navigateur exécutera notre payload.
 
-
 - Utilisé dans le phishing : redirection d'un utilisateur.
 - Des vols de cookie. 
 - Utilisation d'exploit contre le navigateur. 
 
-### Stockée
+### a. Stockée
 
 Le payload est stocké par le serveur (bdd, fichiers) et exécuté chaque fois qu'un client se rendra sur la page comportant la faille.
 
-### Non stockée
+### b. Non stockée
 
 Le contenu est affiché à chaque fois que la victime clique sur le lien fauduleux.
 
-### DOM 
+### c. DOM 
 
 Exécution de code directement dans le navigateur de la victime, à travers l'utilisation d'une des fonctionnalités du site qui possède une faille, comme un algorithme JavaScript.
 
-______
-
-## CSRF 
+## 2. CSRF 
 
 Attaque qui utilise une faille d'un site web afin de transmettre à un utilisateur authentifié une requête HTTP falsifiée qui pointe sur une action à un autre site, afin qu'il l'exécute sans en avoir conscience et **en utilisant ses propres droits**.
 On utilise la vulnérabilité d'un site A pour que la victime effectue une action sur un site B. <br>
 Pour se protéger de ce type d'attaque, le navigateur utilise l'instruction `Samesite` stockée dans le cookie de session. Une fois activé, le site web n'acceptera les reqûetes que si celle-ci viennent du même site.
 
-
-____
-
-## DIFFERENCES XSS CSRF
+## 3. DIFFERENCES XSS CSRF
 
 1. CSRF le site requière une session authentifiée, à contrario d'XSS.
 2. XSS permet à un attaquant d'exécuter du code sur le navigateur de la victime. CSRF permet à un attaquant de faire effectuer une manipulation à une victime. 
 3. XSS conséquences > CSRF conséquences
 
-___
-
-# Hash, chiffrage et sel
-
-Un hash est une fonction unidirectionnel (A donne B, on ne peut pas retrouver A à partir de B). 
-
-Le chiffrage est une fonction bi directionnelle.
-
-Le salage est une méthode permettant de renforcer ces sécurités en y ajoutant une donnée aléatoire supplémentaire. Ceci permets d'empêcher que deux informations identiques, avec la même fonction de hashage, donnent le même résultats.
-
-* *Exemple de chiffrage asymétrique :* RSA, ElGamal, courbes elliptiques
-* *Exemple de chiffrage symétrique* :* DES, AES, Blowfish 
-
-___
-
 # HTTP 1.0/1.1
 
 1.0 : sans état ie pour chaque paire requête/réponse, on doit ouvrir une connection. <br>
 1.1 : avec état ie pour chaque paire, on peut garder la même connection http.
-
-___
 
 # Chiffrage asymétrique
 
@@ -82,7 +58,6 @@ TLS (v1.3, ajd): chiffrage asymétrique pour le handshake (algorithme lourd) pui
     4. Si le certificat est vérifié, le client génére une clé symétrique (clé de session) qu'il chiffre avec la clé publique du serveur.
     5. Le serveur déchiffre la clé de session avec sa clé privé, la communication peut commencer.
 
-___
 
 # Identification, authentification, autorisation
 
@@ -95,11 +70,9 @@ L’authentification est un processus permettant au système de s’assurer de l
 
 * Autorisation : **fonction spécifiant les droits d’accès vers les ressources.**
 
-____
-
 # Solutions utilisées par les entreprises afin de garantir leur cybersécurité.
 
-![sécurité_si](./ressources/sécurité_si.png)
+![sécurité_si](../_resources/sécurité_si.png)
 
 
 ## IDS (Intrusion-Detection System)
@@ -179,7 +152,6 @@ Outils intégré à un endpoint (serveur,pc) afin de surveiller et de collecter 
 4. Protection antispyware
 5. Chiffrage complet du disque
 
-___
 # Network Address Translation (NAT)
 
 Technlogie intégrée dans les routeurs pour faire correspondre son IP publique avec les IP privées de son LAN. Afin de lutter face à l'épuisement des adresses IPv4, cette fonction est très largement utilisée par les box internet ou les réseaux privés virtuels. Les IP privées, ni uniques ni routables, sont celles compris dans les range ci-dessous.
@@ -214,17 +186,6 @@ Le NAT statique va lier une adresse IP internet à une adresse IP externe. La so
 
 
 ## **NAT dynamique**
-___
-
-___
-# Linux : systemd - systemctl
-
-`systemd` est un gestionnaire de système devenu la nouvelle norme pour Linux.
-`systemctl` est l'outil de gestion 
-
-# Ressources intéressantes
-
-* Recensement des questions les plus posées en entretien : https://resources.infosecinstitute.com/topic/top-30-penetration-tester-pentester-interview-questions-and-answers-for-2019/
 
 
 

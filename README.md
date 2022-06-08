@@ -1,11 +1,15 @@
 # Autoformation
 
-Ce repository est utilisé à des fin personnels afin d'améliorer mes compétences et mes connaissances en cybersécurité.
-Vous y trouverez principalement des mémos, des cours, des astuces.
-Le seul objectif de ce dernier est de garder une trace de mon apprentissage. Je ne note que ce dont j'estime avoir besoin.
+Ce repository est utilisé comme serveur distant de sauvegarde pour la prise de note Markdown afin d'améliorer mes compétences et mes connaissances en cybersécurité dans une approche autodidacte.
 
-Mes contacts pro : 
+Contacts :
 
-* email     : gauthierptj81@gmail.com
-* linkedin  : https://www.linkedin.com/in/gauthier-petitjean/
-* téléphone : +33 6 79 77 13 59
+- email     : gauthier.petitjean.pro@gmail.com
+- linkedin  : https://www.linkedin.com/in/gauthier-petitjean/
+- téléphone : +33 (0)6 79 77 13 59
+
+Ethical Hacking : 
+
+- Root-me : https://www.root-me.org/Kalimero-323522
+- TryHackme : https://tryhackme.com/p/Kalimero
+- HackTheBox : https://app.hackthebox.com/profile/512712
