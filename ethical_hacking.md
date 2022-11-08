@@ -40,6 +40,7 @@ Toutes les opérations d'éthical hacking ont toujours été faites à but éduc
 
 - `searchsploit [nom_service]` : chercher s'il existe des failles connues du service avec son numéro de version
     Sinon, sur un navigateur web : `exploitdb`
+- `wpscan` : utilisation de la clé API pour détecter des vulnérabilité dans la configuration du wordpress
 
 ## **Service ouvert : web - 80**
 
@@ -58,7 +59,7 @@ Toutes les opérations d'éthical hacking ont toujours été faites à but éduc
 
 HTTPS Status Codes :
 
-<img src="../_resources/HTTP-Status-Codes.png" alt="drawing" width="600" class="jop-noMdConv"></center>
+<img src=":/1c688df73e794fea8bdc48b5f001caa3" alt="drawing" width="600" class="jop-noMdConv"></center>
 
 - Add-on mozilla pour identifier tous les frameworks utilisés par le Site Web : Wappalyzer
 
@@ -191,6 +192,9 @@ Le plus commun et facile à exploiter : l'attaquant utilise le même canal pour 
     
 
 - [https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/Error Based SQLi/README.md](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/Error%20Based%20SQLi/README.md)
+- https://pentestlab.blog/2012/12/24/sql-injection-authentication-bypass-cheat-sheet/
+- https://perspectiverisk.com/mysql-sql-injection-practical-cheat-sheet/
+- https://resources.infosecinstitute.com/topic/dumping-a-database-using-sql-injection/
 
 ### **2) Injection inférentielle (blind)**
 
@@ -204,6 +208,11 @@ Aucune donnée n'est transférée entre le serveur et le client, et le client n'
 ### **3) Injection out-band**
 
 Plutôt rare car cela dépend des fonctionnalités activées de la bdd utilisées par l'application web. L'attaquant n'utilise pas le même canal pour lancer l'attaque et recueillir les résultats.
+
+### **4) Bypass SQLi filters**
+
+- https://null-byte.wonderhowto.com/how-to/sql-injection-101-avoid-detection-bypass-defenses-0184918/
+- 
 
 Ressources :
 
@@ -509,6 +518,83 @@ Le **mode moniteur** permet à un ordinateur équipé d'une carte réseau Wi-Fi 
 
 **Autre moyen :** utiliser `fern` sur kali linux, etthercap ?, wifite2
 
+# Metaploit Framework
+
+## 1. Théorie
+
+Chemin du répertoire : `/usr/share/metasploit-framework`
+Sémantique : `module/catégorie`
+
+List des modules disponibles :
+- Auxiliary : modules de supports comme les scanners, crawlers, fuzzers
+- Encoders : moule d'encodage de payload pour tenter de les rendre indétectable
+- Evasion : module permettant aux payloads de tenter d'échapper aux AV
+- Exploits (bout de code utilisant une vulnérabilité)
+- NOPs - No OPeration : 0x90 (x86) permettant de ne rien faire faire aux CPU pour un cycle, utilisé comme du padding pour les payloads d'une taille constante
+- Payloads : codes exécutés sur la machine cible, 3 catégories.
+	- Single : exécute la fonction souhaitée (ajouté un utilisateur, lancer un .exe, etc.). Indépendant de metasploit, les single payloads peuvent être utilisés avec netcat par exemple. Exemple `generic/shell_reverse_tcp` .
+	- Stager : établit une connexion entre metasploit et la victime
+	- Staged : chargé par le stager pour pouvoir établir la connexion. Exemple `windows/x64/shell/reverse_tcp`.
+	- NB : Différence dans la sémantique entre les singles et les staged : `shell_reverse_tcp` (single) ou `shell/reverse_tcp` (staged).
+- Post : moules de post-exploitation
+
+## 2. Pratique, commandes
+
+### 2.a : général
+- `msfconsole` : lance la console metasploit
+- `use module` : sélectionne le moule (exploits, payloads, post, etc.)
+- `show x` : affiche les informations relatives à x
+	-  `show options` : affiche les options du payload à paramétrer
+	- `show payloads` : payload disponible pour l'exploit sélectionné
+- `back` : revient en arrière
+- `info` : informations relatives au module sélectionné
+- `search` : permet de chercher une vulnérabilité depuis son nom -  `search eternalblue`
+	- Possibilité ensuite d'utiliser `use 0` pour utiliser le premier de la liste
+	- Rank : Manual < Low < Average < Normal < Good < Great < Excellent
+	- Recherche avec mot-clé :  `search type:auxiliary telnet`, `search platform:windows shell`
+- `unset all` : rétablit les paramètres par défauts
+- `set var val` : set la variable à la valeur indiquée `SET RHOSTS 10.9.53.194`. Différent pour chaque module. Pour un set général : `setg` (pour modifier, `unset payload/RHOST/LHOST...` ou `unsetg`).
+
+### 2.b : exploitation
+
+Une fois que le module, le payload et les paramètres sont définis :
+
+- `exploit` ou `run` : lance l'attaque 
+	- `exploit -z` : background
+
+### 2.c : sessions
+
+Une fois sur la console meterpreter :
+
+- `background` : retourner sur msfconsole (`CTRL + Z`)
+- `sessions` : affiche les sessions existantes
+	- `sessions -i id` : lance la session id
+
+# Piratage Androïd 
+
+Manipulation effectuée pour garder le contrôle sur un téléphone, ssi les pré-requis suivants :  
+- Téléphone sous Androïd
+- À portée de main
+- Connaissance du code pin
+
+Cette ne manip ne repose sur l'exploitation d'aucune vulnérabilité.
+
+## Android 
+1. Activation du mode développeur sur le téléphone (Galaxy S20 : About phone -> Software info -> 7 cliques sur Build number)
+2. Activation du mode USB debugging dans la nouvelle fenêtre Développeur
+3. Téléphone branché à Kali
+ 
+## Kali 
+```
+adb devices # Affiche l'id du téléphone
+adb tcpip <port> # Pour se connecter sans le câble
+adb connect <ip>:<port> #  Connexion over network
+adb shell # Accès shell
+```
+
+Cheatsheet adb : https://www.automatetheplanet.com/adb-cheat-sheet/
+
+
 # Stéganographie
 
 La sténographie est l'art de la dissimulation.
@@ -557,3 +643,13 @@ lynis
 
 - RunPE : https://github.com/itm4n/VBA-RunPE
 - Arsenal Orange Cyberdefense : https://github.com/Orange-Cyberdefense/arsenal
+
+## Bibliographie
+
+### Comment les Trojans fonctionnent t'ils ?
+
+- Projet Github publique : https://github.com/leetCipher/python-trojan
+- Vidéo : https://www.youtube.com/watch?v=9OGYKDpjL3Y
+- C2 Servers, Bind vs. Reverse shell payloads : https://www.triaxiomsecurity.com/command-and-control-bind-vs-reverse-payloads/
+- PsExec : https://learn.microsoft.com/en-us/sysinternals/downloads/psexec
+- PsExec : https://www.it-connect.fr/psexec-un-outil-incontournable-pour-les-sysadmins/
